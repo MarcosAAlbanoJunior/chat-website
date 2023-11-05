@@ -1,5 +1,7 @@
 'use strict';
 
+var baseURL = 'https://chat-website-opal.vercel.app';
+
 var usernamePage = document.querySelector('#username-page');
 var chatPage = document.querySelector('#chat-page');
 var usernameForm = document.querySelector('#usernameForm');
@@ -23,7 +25,8 @@ function connect(event) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
 
-        var socket = new SockJS('https://chat-website-opal.vercel.app/ws');
+        // Usando a base URL na chamada do SockJS
+        var socket = new SockJS(baseURL + '/ws');
         stompClient = Stomp.over(socket);
 
         stompClient.connect({}, onConnected, onError);
@@ -33,11 +36,11 @@ function connect(event) {
 
 
 function onConnected() {
-    // Subscribe to the Public Topic
-    stompClient.subscribe('https://chat-website-opal.vercel.app/topic/public', onMessageReceived);
+    // Subscribe to the Public Topic com a base URL
+    stompClient.subscribe(baseURL + '/topic/public', onMessageReceived);
 
-    // Tell your username to the server
-    stompClient.send("https://chat-website-opal.vercel.app/app/chat.addUser",
+    // Tell your username to the server com a base URL
+    stompClient.send(baseURL + "/app/chat.addUser",
         {},
         JSON.stringify({sender: username, type: 'JOIN'})
     )
@@ -60,7 +63,8 @@ function sendMessage(event) {
             content: messageInput.value,
             type: 'CHAT'
         };
-        stompClient.send("https://chat-website-opal.vercel.app/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+        // Usando a base URL na chamada do stompClient.send
+        stompClient.send(baseURL + "/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
         messageInput.value = '';
     }
     event.preventDefault();
